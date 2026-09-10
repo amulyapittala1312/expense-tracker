@@ -5,9 +5,11 @@ import ExpenseList from "../components/ExpenseList";
 function Expenses() {
   const [expenses, setExpenses] = useState(() => {
     const savedExpenses = localStorage.getItem("expenses");
+    
 
     return savedExpenses ? JSON.parse(savedExpenses) : [];
   });
+  const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("expenses", JSON.stringify(expenses));
@@ -22,7 +24,23 @@ function Expenses() {
       expenses.filter((expense) => expense.id !== id)
     );
   };
+  const editExpense = (expense) => {
+  setEditingExpense(expense);
+};
+const updateExpense = (updatedExpense) => {
+  setExpenses(
+    expenses.map((expense) =>
+      expense.id === updatedExpense.id
+        ? updatedExpense
+        : expense
+    )
+  );
 
+  setEditingExpense(null);
+};
+const cancelEdit = () => {
+  setEditingExpense(null);
+};
   const totalExpenses = expenses.reduce(
     (total, expense) => total + Number(expense.amount),
     0
@@ -41,11 +59,15 @@ function Expenses() {
   return (
     <div className="app">
       <div className="container">
-        <h1>Manage Your Expenses</h1>
+        <div className="page-heading">
+  <p className="page-tag">EXPENSE MANAGEMENT</p>
 
-<p className="subtitle">
-  Add, track, and manage your daily spending
-</p>
+  <h1>Manage Your Expenses</h1>
+
+  <p className="subtitle">
+    Keep track of your spending and stay in control of your money.
+  </p>
+</div>
 
         <div className="summary-card">
           <div>
@@ -59,12 +81,17 @@ function Expenses() {
           </div>
         </div>
 
-        <ExpenseForm onAddExpense={addExpense} />
+        <ExpenseForm onAddExpense={addExpense}
+        editingExpense={editingExpense}
+        onUpdateExpense={updateExpense}
+        onCancelEdit={cancelEdit}
+         />
 
         <ExpenseList
           expenses={expenses}
           onDeleteExpense={deleteExpense}
           onClearAll={clearAllExpenses}
+          onEditExpense={editExpense}
         />
       </div>
     </div>

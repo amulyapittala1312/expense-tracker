@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ExpenseList({ expenses, onDeleteExpense,onClearAll }) {
+function ExpenseList({ expenses, onDeleteExpense,onClearAll,onEditExpense, }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -70,6 +70,12 @@ function ExpenseList({ expenses, onDeleteExpense,onClearAll }) {
                 <p className="amount">
                   ₹{expense.amount}
                 </p>
+<button
+  className="edit-btn"
+  onClick={() => onEditExpense(expense)}
+>
+  Edit
+</button>
 
                 <button
   className="delete-btn"
@@ -85,6 +91,7 @@ function ExpenseList({ expenses, onDeleteExpense,onClearAll }) {
 >
   Delete
 </button>
+
               </div>
             </div>
           ))}

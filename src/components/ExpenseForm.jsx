@@ -1,31 +1,55 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 
-function ExpenseForm({ onAddExpense }) {
+function ExpenseForm({ onAddExpense ,editingExpense,onUpdateExpense,onCancelEdit,}) {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("Select Category");
+  const [category, setCategory] = useState("");
+  useEffect(() => {
+  if (editingExpense) {
+    setTitle(editingExpense.title);
+    setAmount(editingExpense.amount);
+    setCategory(editingExpense.category);
+  }
+}, [editingExpense]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!title || !amount) {
-      alert("Please enter title and amount");
-      return;
-    }
+  if (!title || !amount || !category) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    const newExpense = {
-      id: Date.now(),
+  if (editingExpense) {
+    const updatedExpense = {
+      ...editingExpense,
       title,
       amount,
       category,
     };
 
-    onAddExpense(newExpense);
+    onUpdateExpense(updatedExpense);
 
-    setTitle("");
-    setAmount("");
-    setCategory("");
+setTitle("");
+setAmount("");
+setCategory("");
+
+return;
+  }
+
+  const newExpense = {
+    id: Date.now(),
+    title,
+    amount,
+    category,
   };
+
+  onAddExpense(newExpense);
+
+  setTitle("");
+  setAmount("");
+  setCategory("");
+};
 
   return (
     <div className="expense-form">
@@ -50,14 +74,33 @@ function ExpenseForm({ onAddExpense }) {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="Select Category">Select Category</option>
+          <option value="">Select Category</option>
           <option value="Food">Food</option>
           <option value="Travel">Travel</option>
           <option value="Entertainment">Entertainment</option>
           <option value="Other">Other</option>
         </select>
 
-        <button type="submit">Add Expense</button>
+        <div className="form-buttons">
+  <button type="submit">
+    {editingExpense ? "Update Expense" : "Add Expense"}
+  </button>
+
+  {editingExpense && (
+    <button
+      type="button"
+      className="cancel-btn"
+      onClick={() => {
+        setTitle("");
+        setAmount("");
+        setCategory("");
+        onUpdateExpense(null);
+      }}
+    >
+      Cancel
+    </button>
+  )}
+</div>
       </form>
     </div>
   );
